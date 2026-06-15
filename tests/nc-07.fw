@@ -1,0 +1,6 @@
+fun foo xs {
+    y := bar xs;
+} xs;
+
+fun bar xs {
+} xs;

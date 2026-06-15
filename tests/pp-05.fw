@@ -1,0 +1,8 @@
+fun foo xs {
+ x := head xs;
+ if x == 1 then { x := 2; } else { x := 3; }
+} Cons x xs;
+
+fun bar xs {
+ x := ((1 + head xs) * 4) + (100 / ((head xs) % 2)) ;
+} Cons x xs;

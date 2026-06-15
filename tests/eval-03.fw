@@ -1,0 +1,11 @@
+fun divmod xs {
+    a := head xs;
+    b := head (tail xs);
+    q := a / b;
+    r := a % b;
+} Cons q (Cons r Nil);
+
+fun foo xs {
+  r := (3+3/4-3+1)*10%3+2;
+  res := Cons r Nil;
+} res;

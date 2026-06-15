@@ -1,0 +1,4 @@
+foo (Cons 10 Nil)
+foo (Cons 100 Nil)
+foo (Cons 1000 Nil)
+foo (Cons 3000 Nil)

@@ -1,0 +1,7 @@
+False
+3+3
+10+4-5
+(2/3 + 4)%4
+False || (True || False)
+(3+3/4-3+1)*10%3+2 == 3 && (False || (False || 2 < 3 ))
+(head (Cons 2 Nil)) + head (tail (Cons 3 (Cons 4 Nil)))

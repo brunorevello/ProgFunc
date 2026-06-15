@@ -1,0 +1,27 @@
+fun cola xs {
+    ret := Nil;
+    case xs of {
+       Cons y ys -> { ret := ys };
+    }
+} ret;
+
+fun div xs {
+   ret := 0;
+   case xs of{
+     Cons a (Cons b t) -> { ret := a / b};
+   }
+}Cons ret Nil;
+
+fun mod xs {
+   ret := 0;
+   case xs of{
+     Cons a (Cons b t) -> { ret := a % b};
+   }
+}Cons ret Nil;
+
+fun divmod xs {
+    a := head xs;
+    b := head (cola xs);
+    q := div (Cons a (Cons b Nil));
+    r := mod (Cons a (Cons b Nil));
+} Cons (head q) r;

@@ -1,0 +1,30 @@
+fun rango xs {
+    n   := head xs;
+    res := Nil;
+    while 0 < n {
+        res := Cons n res;
+        n := n - 1;
+    };
+} res;
+
+fun suma xs {
+  sum := 0;
+  while !(xs == Nil) {
+    x   := head xs;
+    xs  := tail xs;
+    sum := sum + x;
+  };
+} Cons sum Nil;
+
+fun sumaCubos xs {
+  sum := 0;
+  while !(xs == Nil) {
+    x   := head xs;
+    xs  := tail xs;
+    sum := sum + x * x * x;
+  };
+} Cons sum Nil;
+
+fun cuadradoSuma xs {
+  s := head (suma xs);
+} Cons (s * s) Nil;

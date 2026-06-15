@@ -1,0 +1,4 @@
+fun foo xs {
+    if 2 then {} else {};
+    while Nil {};
+} Cons 1 Nil;

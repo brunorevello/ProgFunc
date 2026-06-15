@@ -1,0 +1,19 @@
+fun foo xs {
+  ys := tail xs;
+  x := 0;
+  y  := 1;
+  case ys of {
+   Nil -> { x := 1; };
+   Cons 1 zs -> { x := 2; y := 3; };
+   Cons 2 rs -> { if x == 1 then
+                      { while x < 2 { x := x + 1; y := y + 2; }; }
+		    else
+		      { x := 3;
+		        if y == 1 then { y := 9; }
+		                  else { y := 10; y := y-1; };
+                      };
+		};
+  };
+  y := x * y + 1; 
+
+} Cons x (Cons y ys);

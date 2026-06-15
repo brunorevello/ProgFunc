@@ -1,0 +1,31 @@
+fun foo xs {
+    } xs;
+
+fun bar xs {
+    x  := head (foo 9);
+    x  := xs + x;
+    x  := Cons True Nil;
+    x  := (1 + True) && (False || 2); 
+    case xs of {
+        9 -> { x := 9;  };
+	Cons Nil y -> { x := y;  };
+    };
+    xs := True;
+ } x;
+
+fun baz xs {
+    if 10 then {
+        case xs of {
+	    True -> {
+		      x := 5;
+		      x := False;
+		      x := Nil;
+		      while Nil { x := bar True;  };
+	            };
+	};
+	xs := 20;
+    }
+    else {
+        xs := foo 13 < bar 16; 
+    }
+} True;

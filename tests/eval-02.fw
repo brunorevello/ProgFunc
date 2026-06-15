@@ -1,0 +1,9 @@
+fun f1 xs {} Cons 0 Nil;
+
+fun f2 xs {
+    x := 0;
+} Cons x Nil;
+
+fun f3 xs {
+    x := head xs;
+} Cons x Nil;

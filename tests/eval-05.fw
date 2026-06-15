@@ -1,0 +1,32 @@
+fun suma xs {
+    sum := 0;
+    while !(xs == Nil) {
+       x  := head xs;
+       xs := tail xs;
+       sum := sum + x;
+    };
+} Cons sum Nil;
+
+
+fun suma2 xs {
+    sum := 0;
+    while !(xs == Nil) {
+       x  := head xs;
+       xs := tail xs;
+       y := 0;
+       while !(x==0) {
+          sum := sum + 1;
+	  x := x-1;
+       }
+    };
+}Cons sum Nil;
+
+fun repeat xs {
+    x := head xs;
+    y := head (tail xs);
+    res := Nil;
+    while 0 < y {
+        res := Cons x res;
+	y := y - 1;
+    }
+}res;

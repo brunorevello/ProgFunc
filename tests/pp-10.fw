@@ -1,0 +1,46 @@
+fun cuad xs {
+    	 x := head xs;
+    } Cons (x * x) Nil;
+
+fun suma xs {
+    	 sum := 0;
+   	 while !(xs == Nil) {
+       	       x   := head xs;
+       	       xs  := tail xs;
+       	       sum := sum + x;
+	 };
+    } Cons sum Nil;
+
+
+fun max xs {
+    	m := 0;
+    	case xs of
+      	  { Cons x (Cons y Nil) -> { if y < x then { m := x; }
+                                          else { m := y; }; };
+          };
+    } Cons m Nil;
+
+
+fun maximum xs {
+     	m  := head xs;
+      	xs := tail xs;
+      	while !(xs == Nil) {
+              m  := head (max (Cons m (Cons (head xs) Nil)));
+	      xs := tail xs; 
+      	};
+    } Cons m Nil;
+
+fun cuads xs {
+  cs := Nil;
+  while !(xs == Nil) {
+     cs := Cons (head (cuad xs)) cs;
+     xs := tail xs;
+  };
+} cs;
+
+
+fun sumaMaxCuads xs {
+  s  := head (suma xs);
+  m  := head (maximum xs);
+  cs := cuads xs;
+} Cons s (Cons m cs);

@@ -1,0 +1,12 @@
+fun foo xs {
+    case xs of {
+       Cons True Nil -> {};
+       Cons Nil  Nil -> {};
+       True -> {};
+       False -> {};
+       Nil -> {};
+       8 -> {};
+       Cons x ys -> {};
+       zs -> {};
+    };
+} Cons 1 Nil;

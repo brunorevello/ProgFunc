@@ -1,0 +1,6 @@
+f1 Nil
+f1 (Cons 3 Nil)
+f2 Nil
+f2 (Cons 2 Nil)
+f3 (Cons 10 Nil)
+(head (f3 (Cons 10 Nil))) - (head (f3 (Cons 10 Nil)))

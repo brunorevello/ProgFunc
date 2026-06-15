@@ -1,0 +1,4 @@
+sumaCubos (rango (Cons 10 Nil)) == cuadradoSuma (rango (Cons 10 Nil))
+sumaCubos (rango (Cons 15 Nil)) == cuadradoSuma (rango (Cons 15 Nil))
+sumaCubos (rango (Cons 100 Nil)) == cuadradoSuma (rango (Cons 100 Nil))
+sumaCubos (rango (Cons 1000 Nil)) == cuadradoSuma (rango (Cons 1000 Nil))

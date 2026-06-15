@@ -1,0 +1,4 @@
+fun foo xs {
+    x := 1;
+    x := True;
+} Cons 1 Nil;

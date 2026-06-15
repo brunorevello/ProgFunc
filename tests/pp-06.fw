@@ -1,0 +1,6 @@
+fun foo xs {
+ x := head xs;
+ if (!(x == 1) && ((x < 10) || !(x < 10))) then {
+   while x < 2 { x := x + 1;};
+ } else { x := 3; }
+} Cons x Nil;

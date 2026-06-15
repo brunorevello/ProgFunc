@@ -1,0 +1,44 @@
+fun cola xs {
+    ret := Nil;
+    case xs of {
+       Cons y ys -> { ret := ys };
+    }
+} ret;
+
+fun impar xs {
+    x := 0;
+    y := 0;
+    case xs of {
+       Cons h Nil -> { x:= h };
+       Nil -> y := -1;
+       Cons h (Cons w z) -> { y := -2};
+    };
+    if !(y < 0) then {
+      case x of {
+        0 -> {y := 0};
+        1 -> {y := 1};
+        2 -> {y := 0};
+        3 -> {y := 1};
+        4 -> {y := 0};
+        5 -> {y := 1};
+        6 -> {y := 0};
+        7 -> {y := 1};
+        8 -> {y := 0};
+        9 -> {y := 1};
+        otro -> { y := -3};
+      };
+    } else {};
+} Cons y Nil;
+
+
+fun cero xs {
+    w := 0;
+    t := 0;
+    case xs of {
+      Cons x y -> {t := x;};
+    };
+    case t == 0 of {
+       False -> { w := 0};
+       True  -> { w := 1};
+    };
+}Cons w Nil;

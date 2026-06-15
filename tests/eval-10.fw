@@ -1,0 +1,48 @@
+fun reverse xs {
+    ys := Nil;
+    while !(xs == Nil) {
+        ys := Cons (head xs) ys;
+        xs := tail xs;
+    };
+} ys;
+
+
+fun insert xs {
+    x   := head xs;
+    xs  := tail xs;
+    aux := Nil;
+
+    while !(xs == Nil) {
+
+        if x < head xs then {
+            aux := Cons (head xs) aux;
+            xs  := tail xs;
+        } else {
+            aux := Cons x aux;
+            x   := head xs;
+            xs  := tail xs;
+        };
+
+    };
+
+    aux := Cons x aux;
+
+    xs := Nil;
+    while !(aux == Nil) {
+        xs  := Cons (head aux) xs;
+        aux := tail aux;
+    };
+
+} xs;
+
+
+fun insertionSort xs {
+    res := Nil;
+
+    while !(xs == Nil) {
+        res := insert (Cons (head xs) res);
+        xs  := tail xs;
+    };
+
+} reverse res;
+

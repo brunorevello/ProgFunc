@@ -1,0 +1,6 @@
+fun foo xs {
+    case xs of {
+        (Cons x xs) -> { y := x; };
+        Nil -> { y := z; };
+    };
+} xs;

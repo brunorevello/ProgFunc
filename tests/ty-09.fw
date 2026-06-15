@@ -1,0 +1,14 @@
+fun id xs {} xs;
+
+fun foo xs {
+    ys := id 8;
+    b  := True == id ys;
+} ys;
+
+fun bar xs {
+   x := id 10 + foo 20;
+   case foo True of {
+       Nil -> { x := head xs + head (tail (10 + True)) };
+       Cons z zs -> { x := z; x := zs; zs := x; };
+   };
+} Cons (tail x)  (head x);

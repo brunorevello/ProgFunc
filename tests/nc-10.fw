@@ -1,0 +1,28 @@
+fun foo xs {
+    x := bar ys;
+    while True {
+        y := head xs;
+    };
+    z := y;
+} xs;
+
+fun bar xs {
+    case xs of {
+        (Cons x (Cons x w)) -> { v := x; };
+        Nil -> { v := w; };
+    };
+} xs;
+
+fun foo ys {
+    a := foo xs;
+    b := baz Nil;
+} ys;
+
+fun baz xs {
+    if True then {
+        c := 1;
+    } else {
+        c := 2;
+    };
+    d := c;
+} xs;

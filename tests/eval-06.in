@@ -1,0 +1,14 @@
+cola (Cons 3 Nil)
+cola (Cons 3 (Cons 4 Nil))
+cola Nil
+impar (Cons 1 Nil)
+impar (Cons 2 Nil)
+impar (Cons 3 Nil)
+impar (Cons 8 Nil)
+impar (Cons 10 Nil)
+impar (Cons (-10) Nil)
+impar Nil
+impar (Cons 2 (Cons 4 Nil))
+impar (Cons 2 (Cons 4 (Cons 10 Nil)))
+cero (Cons 0 Nil)
+cero (Cons 1 Nil)

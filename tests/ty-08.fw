@@ -1,0 +1,9 @@
+fun foo xs {
+    ys := tail xs;
+    b  := True == 0;
+    b  := b < True;
+    if ((xs < ys) && 8) || (2 + True) then {} else {};
+    while ((False * 2) % (8 && Nil)) - (Cons Nil Nil) {
+        if 0 then { b := 9;  } else { b := Cons b Nil;  };
+    };  
+} ys;

@@ -1,0 +1,4 @@
+insertionSort (Cons 3 (Cons 4 (Cons 7 (Cons 3 (Cons 10 Nil)))))
+insertionSort (Cons 8 (Cons 3 (Cons 5 (Cons 1 (Cons 9 (Cons 2 (Cons 7 (Cons 4 (Cons 6 Nil)))))))))
+insertionSort (Cons 15 (Cons 1 (Cons 14 (Cons 2 (Cons 13 (Cons 3 (Cons 12 (Cons 4 (Cons 11 (Cons 5 Nil))))))))))
+insertionSort (Cons 17 (Cons 4 (Cons 12 (Cons 19 (Cons 8 (Cons 15 (Cons 2 (Cons 11 (Cons 6 (Cons 14 (Cons 9 (Cons 1 (Cons 18 (Cons 5 (Cons 13 (Cons 7 (Cons 16 (Cons 3 (Cons 10 Nil)))))))))))))))))))

@@ -1,0 +1,50 @@
+fun foo xs {
+ if True then {
+   if True then {
+   }
+   else {
+      if True then {
+	if True then {
+	}
+	else {
+	  if True then {
+	    if True then {
+	    }
+	    else {
+	      if True then {
+		 if True then {
+		   if True then {
+		   }
+		   else {
+		     if True then {
+		     }
+		     else {
+			if True then {
+			  if True then {
+			  }
+			  else {
+			  };			
+			}
+			else {
+			};		     
+		     };		   
+		   };		 
+		 }
+		 else {
+		 };	      
+	      }
+	      else {
+	      };	    
+	    };	  
+	  }
+	  else {
+	  };	
+	};
+      }
+      else {
+      };
+   };
+ }
+ else {
+ };
+} xs;

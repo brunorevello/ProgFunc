@@ -1,0 +1,11 @@
+fun foo xs {
+    while True {
+        x := 1;
+    };
+    if True then {
+        y := 2;
+    } else {
+        y := 3;
+    };
+    z := x + y;
+} xs;

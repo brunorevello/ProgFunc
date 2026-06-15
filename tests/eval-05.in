@@ -1,0 +1,6 @@
+repeat (Cons 5 (Cons 7 Nil))
+repeat (Cons 5 (Cons 3 Nil))
+repeat (Cons 5 (Cons 0 Nil))
+repeat (Cons 5 (Cons (-10) Nil))
+suma Nil
+suma (repeat (Cons 5 (Cons 7 Nil))) == suma2 (repeat (Cons 5 (Cons 7 Nil)))

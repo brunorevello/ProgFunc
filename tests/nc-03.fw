@@ -1,0 +1,5 @@
+fun foo xs {
+} xs;
+
+fun foo ys {
+} ys;
