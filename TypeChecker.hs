@@ -121,8 +121,58 @@ showLines =
 
 -- Chequeo de un programa.
 -- El comportamiento de la función se especifica en la letra de la Tarea.
+
+sonDistintas :: Eq a => [a] -> [a] -> Bool
+sonDistintas [] _ = True
+sonDistintas (x:xs) ys
+    | elem x ys = False
+    | otherwise   = sonDistintas xs ys
+
+
 checkProg :: Prog -> CheckRes
-checkProg _ = Ok
+checkProg p = if not (checkNames p []) then HasNameErrors
+              else if False then HasTypeErrors --  not checkTypes p then HasTypeErrors
+              else Ok
+
+checkNames :: Prog -> [Id] -> Bool
+checkNames [] _ = True
+checkNames ((Fun idFunc idVar stmts exp):fs) funs
+              | elem idFunc funs = False
+              | otherwise = checkFunc stmts exp idVar idFunc:funs && checkNames fs idFunc:funs
+
+checkFunc :: Stmts -> Exp -> Id -> [Id] -> Bool
+checkFunc stmts exp idVar funs = fst (func) && checkExpresion exp snd (func)
+                    where func = checkStmts stmts funs [idVar]
+
+checkStmts :: Stmts -> [Id] -> [Id] -> (Bool, [Id])
+checkStmts [] _ vars = (True, vars)
+checkStmts (stmt:stmts) funs vars | not (fst func) = (False, [])
+                                  | otherwise = checkStmts stmts funs (snd func)
+                                  where func = checkStmt stmt funs vars
+
+checkStmt :: Stmt -> [Id] -> [Id] -> (Bool, [Id])
+checkStmt (Assign id exp) funs vars = (checkExpresion exp funs vars, id:vars)
+checkStmt (While exp stmts) funs vars = (checkExpresion exp funs vars && fst (checkStmts stmts funs vars), vars)
+checkStmt (If exp stmts1 stmts2) funs vars = (checkExpresion exp funs vars && fst (checkStmts stmts1 funs vars) && fst (checkStmts stmts2 funs vars), vars)
+checkStmt (Case exp clauses) funs vars = (checkExpresion exp funs vars && checkClauses clauses funs vars, vars)
+
+checkClauses :: [Clause] -> [Id] -> [Id] -> Bool
+checkClauses [] _ _ = True
+checkClauses ((Clause pattern stmts):clauses) funs vars = checkPatterns pattern funs vars && fst (checkStmts stmts funs vars) && checkClauses clauses
+
+checkPatterns :: Pattern -> [Id] -> (Bool, [Id])
+checkPatterns PNil _ = (True, [])
+checkPatterns (PCons pattern1 pattern2) vars = (fst f1 && fst f2 && (sonDistintas (snd f1) (snd f2)), snd f1 ++ snd f2)
+                                                where
+                                                  f1 = checkPatterns pattern1 vars
+                                                  f2 = checkPatterns pattern2 vars
+checkPatterns (PLitN _) _ = (True, [])
+checkPatterns (LitB _) _ = (True, [])
+checkPatterns (PVar pid) vars = (sonDistintas [pid] vars, [pid]) 
+
+
+checkExpresion :: Exp -> [Id] -> [Id] -> Bool
+checkExpresion _ _ _ = True
 
 -- Chequeo de una expresión.
 -- El comportamiento de la función se especifica en la letra de la Tarea.
