@@ -128,10 +128,16 @@ sonDistintas (x:xs) ys
     | elem x ys = False
     | otherwise   = sonDistintas xs ys
 
+existeVariable :: Id -> [(Id, Type)] -> (Bool, (Id, Type))
+existeVariable i [] = (False, (i, TInt)) 
+
+existeVariable i ((x, t):xs)
+    | i == x    = (True, (x, t))
+    | otherwise = existeVariable i xs
 
 checkProg :: Prog -> CheckRes
 checkProg p = if not (checkNames p []) then HasNameErrors
-              else if False then HasTypeErrors --  not checkTypes p then HasTypeErrors
+              else if not (checkTypes p []) then HasTypeErrors --  not checkTypes p then HasTypeErrors
               else Ok
 
 checkNames :: Prog -> [Id] -> Bool
@@ -178,3 +184,21 @@ checkExpresion _ _ _ = True
 -- El comportamiento de la función se especifica en la letra de la Tarea.
 checkExp :: Prog -> Exp -> CheckRes
 checkExp _ _ = Ok
+
+
+checkTypes :: Prog -> [TypeError]-> [TypeError]
+checkTypes [] errores = errores
+checkTypes ((Fun idFunc idVar stmts exp):fs) errores = checkTStmts stmts [] errores ++ checkTExp exp errores ++ checkTypes fs errores
+
+checkTStmts :: [Stmt] -> [(Id , Val)] -> [TypeError] -> [TypeError]
+checkTStmts [] _ errores = errores
+checkTStmts (stmt:stmts) ids errores = fst func ++ checkStmts stmts (snd func) errores
+                      where func = checkTStmt stmt ids
+
+checkTStmt :: Stmt -> [(Id , Val)] -> [TypeError] -> ([TypeError], [(Id , Val)])
+checkTStmt (Assign id exp) ids_con_tipos errores | not fst func = (errores, (id, getType exp):ids_con_tipos)
+                                                 | fst func && (getType exp <> snd (snd func)) = ((AssignTypeMismatch id (snd (snd func)) getType exp):errores)
+                                                 | otherwise = (errores, ids_con_tipos)
+                                         where 
+                                          func = (existeVariable id ids_con_tipos)
+checkTStmt (While exp stmts) ids_con_tipos errores = 
