@@ -122,7 +122,82 @@ showLines =
 -- Chequeo de un programa.
 -- El comportamiento de la función se especifica en la letra de la Tarea.
 checkProg :: Prog -> CheckRes
-checkProg _ = Ok
+checkProg p = if null names then Ok else HasNameErrors names
+  where names = checkOverallDupVar p
+
+
+-- Collect ids of duplicated functions
+checkOverallDupFunc :: Prog -> [NameError]
+checkOverallDupFunc p = snd (foldl checkDupFunc ([], []) p)
+
+checkDupFunc :: ([Id], [NameError]) -> Fun -> ([Id], [NameError])
+checkDupFunc (funs, errors) (Fun idF _ _ _)
+  | elem idF funs = (funs, DupFun idF:errors)
+  | otherwise     = (idF:funs, errors)
+
+
+-- Collect other errors from inner functions
+checkOverallDupVar :: Prog -> [NameError]
+checkOverallDupVar p = snd (foldl checkDupVar ([],[]) p)
+
+checkDupVar :: ([Id], [NameError]) -> Fun -> ([Id], [NameError])
+checkDupVar (funs, errors) (Fun idF idV stmts exp) = (funsVars , errors ++ errorsFuns ++ errorsVars ++ checkExpresion exp funsVars varsVars)
+  where (funsVars, varsVars, errorsVars) = checkStmts (idF:funs, [idV], []) stmts
+        (_, errorsFuns) = checkDupFunc (funs, []) (Fun idF idV stmts exp)
+
+
+
+checkStmts :: ([Id], [Id], [NameError]) -> Stmts -> ([Id], [Id], [NameError])
+checkStmts = foldl checkStmt
+
+checkStmt :: ([Id], [Id], [NameError]) -> Stmt -> ([Id], [Id], [NameError])
+checkStmt (funs, vars, errors) (Assign id exp) = (funs, id:vars, errors ++ checkExpresion exp funs vars)
+checkStmt (funs, vars, errors) (While exp stmts) = (funs, vars, errors ++ checkExpresion exp funs vars ++ thrd (checkStmts (funs, vars, []) stmts))
+checkStmt (funs, vars, errors) (If exp stmts1 stmts2) = (funs, vars, errors ++ checkExpresion exp funs vars ++ thrd (checkStmts (funs, vars, []) stmts1) ++ thrd (checkStmts (funs, vars, []) stmts2))
+checkStmt (funs, vars, errors) (Case exp clauses) = (funs, vars, errors ++ checkExpresion exp funs vars ++ checkClauses (funs, vars, []) clauses)
+
+
+patDupVars :: [Id] -> [Id] -> [NameError]
+patDupVars xs ys = [DupVar x | x <- xs, elem x ys]
+
+thrd :: (a, b, c) -> c
+thrd (_, _, z) = z
+
+checkClauses :: ([Id], [Id], [NameError]) -> [Clause] -> [NameError]
+checkClauses acum clauses= thrd (foldl checkClause acum clauses)
+
+
+checkClause ::  ([Id], [Id], [NameError]) -> Clause -> ([Id], [Id], [NameError])
+checkClause (funs, vars, errors) (Clause pattern stmts)  = (funs, vars, pattErrors ++ errors ++ thrd (checkStmts (funs, vars ++ pattVars, []) stmts))
+  where (pattVars, pattErrors) = checkPatterns pattern vars
+
+checkPatterns :: Pattern -> [Id] -> ([Id], [NameError])
+checkPatterns PNil _ = ([], [])
+checkPatterns (PCons pattern1 pattern2) vars = (patVars1 ++ patVars2, patErrors1 ++ patErrors2 ++ patDupVars patVars1 patVars2)
+                                              where
+                                                (patVars1, patErrors1) = checkPatterns pattern1 vars
+                                                (patVars2, patErrors2) = checkPatterns pattern2 vars
+checkPatterns (PLitN _) _ = ([], [])
+checkPatterns (PLitB _) _ = ([], [])
+checkPatterns (PVar pid) vars
+  | elem pid vars = ([pid], [DupVar pid])
+  | otherwise     = ([pid], [])
+
+checkExpresion :: Exp -> [Id] -> [Id] -> [NameError]
+checkExpresion (LitN int) _ _ = []
+checkExpresion (LitB bool) _ _ = []
+checkExpresion (Cons exp1 exp2) funs vars = checkExpresion exp1 funs vars ++ checkExpresion exp2 funs vars
+checkExpresion Nil _ _ = []
+checkExpresion (Head exp) funs vars  = checkExpresion exp funs vars
+checkExpresion (Tail exp) funs vars  = checkExpresion exp funs vars
+checkExpresion (Call id exp) funs vars
+  | elem id funs = checkExpresion exp funs vars
+  | otherwise = UndefFun id : checkExpresion exp funs vars
+checkExpresion (Var id) funs vars
+  | elem id vars = []
+  | otherwise = [UndefVar id]
+checkExpresion (UnOp _ exp) funs vars = checkExpresion exp funs vars
+checkExpresion (BinOp _ exp1 exp2) funs vars= checkExpresion exp1 funs vars ++ checkExpresion exp2 funs vars
 
 -- Chequeo de una expresión.
 -- El comportamiento de la función se especifica en la letra de la Tarea.

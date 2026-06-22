@@ -62,9 +62,23 @@ run_eval_tests() {
 }
 
 # ----------------------------------------------------------------------
-# Opciones (sin cambios)
+# Opciones
 # ----------------------------------------------------------------------
-# ... (deja esta parte igual que la tenías)
+do_pp=false; do_nc=false; do_ty=false; do_eval=false
+
+for arg in "$@"; do
+  case "$arg" in
+    -p|--prettyprint) do_pp=true ;;
+    -n|--nombres)     do_nc=true ;;
+    -t|--tipos)       do_ty=true ;;
+    -e|--eval)        do_eval=true ;;
+  esac
+done
+
+# Sin flags: correr todos
+if ! $do_pp && ! $do_nc && ! $do_ty && ! $do_eval; then
+  do_pp=true; do_nc=true; do_ty=true; do_eval=true
+fi
 # ----------------------------------------------------------------------
 
 # ----------------------------------------------------------------------
