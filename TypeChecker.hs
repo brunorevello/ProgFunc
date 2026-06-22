@@ -201,4 +201,10 @@ checkTStmt (Assign id exp) ids_con_tipos errores | not fst func = (errores, (id,
                                                  | otherwise = (errores, ids_con_tipos)
                                          where 
                                           func = (existeVariable id ids_con_tipos)
-checkTStmt (While exp stmts) ids_con_tipos errores = 
+checkTStmt (While exp stmts) ids_con_tipos errores = checkTBool exp errores ++ fst (checkTStmts stmts ids_con_tipos errores)
+checkTStmt (If exp stmts1 stmts2) ids_con_tipos errores = checkBool exp errores ++ fst (checkTStmts stmts1 ids_con_tipos errores) ++ fst (checkTStmts stmts2 ids_con_tipos errores)
+checkTStmt (Case exp clauses) ids_con_tipos errores = checkTBool exp errores ++ checkTClauses clauses ids_con_tipos errores
+
+checkTBool :: Exp -> [TypeError] -> [TypeError]
+checkTBool exp errores | TypeExp exp == Boolean = []
+                       | otherwise = CondNotBool TypeExp exp
