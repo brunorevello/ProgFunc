@@ -121,6 +121,20 @@ showLines =
 
 -- Chequeo de un programa.
 -- El comportamiento de la función se especifica en la letra de la Tarea.
+
+sonDistintas :: Eq a => [a] -> [a] -> Bool
+sonDistintas [] _ = True
+sonDistintas (x:xs) ys
+    | elem x ys = False
+    | otherwise   = sonDistintas xs ys
+
+existeVariable :: Id -> [(Id, Type)] -> (Bool, (Id, Type))
+existeVariable i [] = (False, (i, TInt)) 
+
+existeVariable i ((x, t):xs)
+    | i == x    = (True, (x, t))
+    | otherwise = existeVariable i xs
+
 checkProg :: Prog -> CheckRes
 checkProg p = if null names then Ok else HasNameErrors names
   where names = checkOverallDupVar p
@@ -203,3 +217,27 @@ checkExpresion (BinOp _ exp1 exp2) funs vars= checkExpresion exp1 funs vars ++ c
 -- El comportamiento de la función se especifica en la letra de la Tarea.
 checkExp :: Prog -> Exp -> CheckRes
 checkExp _ _ = Ok
+
+
+-- checkTypes :: Prog -> [TypeError]-> [TypeError]
+-- checkTypes [] errores = errores
+-- checkTypes ((Fun idFunc idVar stmts exp):fs) errores = checkTStmts stmts [] errores ++ checkTExp exp errores ++ checkTypes fs errores
+
+-- checkTStmts :: [Stmt] -> [(Id , Val)] -> [TypeError] -> [TypeError]
+-- checkTStmts [] _ errores = errores
+-- checkTStmts (stmt:stmts) ids errores = fst func ++ checkStmts stmts (snd func) errores
+--                       where func = checkTStmt stmt ids
+
+-- checkTStmt :: Stmt -> [(Id , Val)] -> [TypeError] -> ([TypeError], [(Id , Val)])
+-- checkTStmt (Assign id exp) ids_con_tipos errores | not fst func = (errores, (id, getType exp):ids_con_tipos)
+--                                                  | fst func && (getType exp <> snd (snd func)) = ((AssignTypeMismatch id (snd (snd func)) getType exp):errores)
+--                                                  | otherwise = (errores, ids_con_tipos)
+--                                          where 
+--                                           func = (existeVariable id ids_con_tipos)
+-- checkTStmt (While exp stmts) ids_con_tipos errores = checkTBool exp errores ++ fst (checkTStmts stmts ids_con_tipos errores)
+-- checkTStmt (If exp stmts1 stmts2) ids_con_tipos errores = checkBool exp errores ++ fst (checkTStmts stmts1 ids_con_tipos errores) ++ fst (checkTStmts stmts2 ids_con_tipos errores)
+-- checkTStmt (Case exp clauses) ids_con_tipos errores = checkTBool exp errores ++ checkTClauses clauses ids_con_tipos errores
+
+-- checkTBool :: Exp -> [TypeError] -> [TypeError]
+-- checkTBool exp errores | TypeExp exp == Boolean = []
+--                        | otherwise = CondNotBool TypeExp exp
