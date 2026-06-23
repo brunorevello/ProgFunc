@@ -1,0 +1,5 @@
+fun foo xs {
+   x := head xs;
+   y := (10 / x) - 1;
+   
+} Cons (100 / y)  Nil;

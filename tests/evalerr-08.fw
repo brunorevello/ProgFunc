@@ -1,0 +1,1 @@
+fun mitail xs {} (tail xs);
