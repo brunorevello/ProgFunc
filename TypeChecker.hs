@@ -130,15 +130,25 @@ sonDistintas (x:xs) ys
 
 existeVariable :: Id -> [(Id, Type)] -> (Bool, (Id, Type))
 existeVariable i [] = (False, (i, TInt)) 
-
 existeVariable i ((x, t):xs)
     | i == x    = (True, (x, t))
     | otherwise = existeVariable i xs
 
-checkProg :: Prog -> CheckRes
-checkProg p = if null names then Ok else HasNameErrors names
-  where names = checkOverallDupVar p
+primero :: (a, b, c) -> a
+primero (x, _, _) = x
 
+segundo :: (a, b, c) -> b
+segundo (_, y, _) = y
+
+trd :: (a, b, c) -> c
+trd (_, _, z) = z
+
+checkProg :: Prog -> CheckRes
+checkProg p = if null names 
+                then if null errTypes then Ok else HasTypeErrors errTypes
+                else HasNameErrors names
+  where names = checkOverallDupVar p
+        errTypes = checkTypes p []
 
 -- Collect ids of duplicated functions
 checkOverallDupFunc :: Prog -> [NameError]
@@ -188,7 +198,7 @@ checkClause (funs, vars, errors) (Clause pattern stmts)  = (funs, vars, pattErro
 checkPatterns :: Pattern -> [Id] -> ([Id], [NameError])
 checkPatterns PNil _ = ([], [])
 checkPatterns (PCons pattern1 pattern2) vars = (patVars1 ++ patVars2, patErrors1 ++ patErrors2 ++ patDupVars patVars1 patVars2)
-                                              where
+                                                where
                                                 (patVars1, patErrors1) = checkPatterns pattern1 vars
                                                 (patVars2, patErrors2) = checkPatterns pattern2 vars
 checkPatterns (PLitN _) _ = ([], [])
@@ -218,26 +228,195 @@ checkExpresion (BinOp _ exp1 exp2) funs vars= checkExpresion exp1 funs vars ++ c
 checkExp :: Prog -> Exp -> CheckRes
 checkExp _ _ = Ok
 
+checkTypes :: Prog -> [TypeError] -> [TypeError]
+checkTypes [] errores = errores
+checkTypes (Fun idFunc idVar stmts exp : fs) errores = 
+    let 
+        entornoInicial = [(idVar, TList)] 
+        
+        -- En vez de checkTStmts, usamos foldl con checkTStmt para obtener errores y el entorno final
+        (erroresFinalesStmts, entornoFinal) = foldl (\(errs, env) stmt -> checkTStmt stmt env errs) (errores, entornoInicial) stmts
+        
+        -- Ahora sí, la expresión de retorno conoce todas las variables inferidas
+        (erroresExp, tipoRetorno) = checkTExp exp entornoFinal erroresFinalesStmts
+        
+        erroresFinalesFun = if tipoRetorno == TList
+                            then erroresExp
+                            else erroresExp ++ [WrongReturnType idFunc tipoRetorno]
+                            
+    in checkTypes fs erroresFinalesFun
 
--- checkTypes :: Prog -> [TypeError]-> [TypeError]
--- checkTypes [] errores = errores
--- checkTypes ((Fun idFunc idVar stmts exp):fs) errores = checkTStmts stmts [] errores ++ checkTExp exp errores ++ checkTypes fs errores
+checkTStmts :: [Stmt] -> [(Id , Type)] -> [TypeError] -> [TypeError]
+checkTStmts [] _ errores = errores
+checkTStmts (stmt:stmts) ids_con_tipos errores = checkTStmts stmts entornoNuevo erroresActualizados
+  where 
+    (erroresActualizados, entornoNuevo) = checkTStmt stmt ids_con_tipos errores
 
--- checkTStmts :: [Stmt] -> [(Id , Val)] -> [TypeError] -> [TypeError]
--- checkTStmts [] _ errores = errores
--- checkTStmts (stmt:stmts) ids errores = fst func ++ checkStmts stmts (snd func) errores
---                       where func = checkTStmt stmt ids
+checkTStmt :: Stmt -> [(Id , Type)] -> [TypeError] -> ([TypeError], [(Id , Type)])
 
--- checkTStmt :: Stmt -> [(Id , Val)] -> [TypeError] -> ([TypeError], [(Id , Val)])
--- checkTStmt (Assign id exp) ids_con_tipos errores | not fst func = (errores, (id, getType exp):ids_con_tipos)
---                                                  | fst func && (getType exp <> snd (snd func)) = ((AssignTypeMismatch id (snd (snd func)) getType exp):errores)
---                                                  | otherwise = (errores, ids_con_tipos)
---                                          where 
---                                           func = (existeVariable id ids_con_tipos)
--- checkTStmt (While exp stmts) ids_con_tipos errores = checkTBool exp errores ++ fst (checkTStmts stmts ids_con_tipos errores)
--- checkTStmt (If exp stmts1 stmts2) ids_con_tipos errores = checkBool exp errores ++ fst (checkTStmts stmts1 ids_con_tipos errores) ++ fst (checkTStmts stmts2 ids_con_tipos errores)
--- checkTStmt (Case exp clauses) ids_con_tipos errores = checkTBool exp errores ++ checkTClauses clauses ids_con_tipos errores
+checkTStmt (Assign id exp) ids_con_tipos errores | not existe = (erroresExp, (id, tipoExp) : ids_con_tipos)
+                                                 | tipoExp /= tipoOld = (erroresExp ++ [AssignTypeMismatch id tipoOld tipoExp], ids_con_tipos)
+                                                 | otherwise = (erroresExp, ids_con_tipos)
+                                              where
+                                                resExp     = checkTExp exp ids_con_tipos errores
+                                                erroresExp = fst resExp
+                                                tipoExp    = snd resExp
+                                                func       = existeVariable id ids_con_tipos
+                                                existe     = fst func
+                                                tipoOld    = snd (snd func)
 
--- checkTBool :: Exp -> [TypeError] -> [TypeError]
--- checkTBool exp errores | TypeExp exp == Boolean = []
---                        | otherwise = CondNotBool TypeExp exp
+checkTStmt (While exp stmts) ids_con_tipos errores = (erroresFinales, ids_con_tipos)
+  where
+    resExp = checkTExp exp ids_con_tipos errores
+    erroresExp = fst resExp
+    tipoExp = snd resExp
+    erroresCond = if tipoExp == TBool 
+                  then erroresExp 
+                  else erroresExp ++ [CondNotBool tipoExp]              
+    erroresFinales = checkTStmts stmts ids_con_tipos erroresCond
+
+
+checkTStmt (If exp stmts1 stmts2) ids_con_tipos errores = (erroresFinales, ids_con_tipos)
+  where
+    resExp = checkTExp exp ids_con_tipos errores
+    erroresExp = fst resExp
+    tipoExp = snd resExp
+    erroresCond = if tipoExp == TBool 
+                  then erroresExp 
+                  else erroresExp ++ [CondNotBool tipoExp]
+                  
+    erroresThen = checkTStmts stmts1 ids_con_tipos erroresCond
+    erroresFinales = checkTStmts stmts2 ids_con_tipos erroresThen
+
+checkTStmt (Case exp clauses) ids_con_tipos errores = (erroresFinales, ids_con_tipos)
+  where
+    resExp = checkTExp exp ids_con_tipos errores
+    erroresExp = fst resExp
+    tipoEsperado = snd resExp
+    erroresFinales = checkTClauses clauses tipoEsperado ids_con_tipos erroresExp
+
+
+checkTClauses :: [Clause] -> Type -> [(Id , Type)] -> [TypeError] -> [TypeError]
+checkTClauses [] _ _ errores = errores
+checkTClauses (Clause pattern stmts : clauses) tipo ids_con_tipos errores = checkTClauses clauses tipo ids_con_tipos erroresActualizados
+  where 
+    func         = checkTPattern pattern tipo ids_con_tipos []
+    erroresPat   = primero func
+    entornoPat   = trd func
+    erroresStmts = checkTStmts stmts entornoPat erroresPat
+    erroresActualizados = errores ++ erroresStmts
+
+
+checkTPattern :: Pattern -> Type -> [(Id , Type)] -> [TypeError] -> ([TypeError], Type, [(Id, Type)])
+checkTPattern PNil tipo ids_con_tipos errores | tipo == TList = (errores, TList, ids_con_tipos)
+                                  | otherwise = (PatMismatch tipo TList:errores, TList, ids_con_tipos)
+
+checkTPattern (PCons pattern1 pattern2) tipo ids_con_tipos errores 
+  | tipo /= TList             = (PatMismatch tipo TList : errores, TList, ids_con_tipos)
+  | t1 == TInt && t2 == TList = (errores ++ errs1 ++ errs2, TList, env1 ++ env2)
+  | otherwise                 = (errores ++ [ConsExpType t1 t2], TList, env1 ++ env2)
+  where 
+    (errs1, t1, env1) = checkTPattern pattern1 TInt ids_con_tipos []
+    (errs2, t2, env2) = checkTPattern pattern2 TList ids_con_tipos []
+ 
+
+checkTPattern (PLitN _) tipo ids_con_tipos errores | tipo == TInt = (errores, TInt, ids_con_tipos)
+                                       | otherwise = (PatMismatch tipo TInt:errores, TInt, ids_con_tipos)
+checkTPattern (PLitB _) tipo ids_con_tipos errores | tipo == TBool = (errores, TBool, ids_con_tipos)
+                                       | otherwise = (PatMismatch tipo TBool:errores, TBool, ids_con_tipos)                                       
+checkTPattern (PVar id) tipo ids_con_tipos errores = (errores, tipo, (id, tipo):ids_con_tipos)
+
+checkTExp :: Exp -> [(Id, Type)] -> [TypeError] -> ([TypeError], Type)
+checkTExp (LitN _) _ errores = (errores, TInt)
+checkTExp (LitB _) _ errores = (errores, TBool)
+checkTExp (Cons exp1 exp2) ids_con_tipos errores | snd func1 == TInt && snd func2 == TList = (fst func2, TList)
+                                                 | otherwise = (fst func2 ++ [ConsExpType (snd func1) (snd func2)], TList) 
+                                                 where
+                                                   func1 = checkTExp exp1 ids_con_tipos errores
+                                                   func2 = checkTExp exp2 ids_con_tipos (fst func1)
+
+checkTExp Nil _ errores = (errores, TList)
+checkTExp (Head exp) ids_con_tipos errores | snd func == TList = (fst func, TInt)
+                                           | otherwise = (fst func ++ [HeadTailArg (snd func)], TInt)
+                                          where
+                                            func = checkTExp exp ids_con_tipos errores
+
+checkTExp (Tail exp) ids_con_tipos errores | snd func == TList = (fst func, TList)
+                                           | otherwise = (fst func ++ [HeadTailArg (snd func)], TList)
+                                          where
+                                            func = checkTExp exp ids_con_tipos errores
+
+checkTExp (Call id exp) ids_con_tipos errores | snd func == TList = (fst func, TList)
+                                              | otherwise = (fst func ++ [CallArgType id (snd func)], TList)
+                                              where
+                                                func = checkTExp exp ids_con_tipos errores  
+
+checkTExp (Var id) ids_con_tipos errores = (errores, snd (snd func))
+                              where
+                                func = existeVariable id ids_con_tipos
+
+
+
+checkTExp (BinOp Add exp1 exp2) ids_con_tipos errores | snd func1 == TInt && snd func2 == TInt = (fst func2, TInt)
+                                                      | otherwise = (fst func2 ++ [BinOpWrongType Add (snd func1) (snd func2)], TInt)
+                                                      where
+                                                        func1 = checkTExp exp1 ids_con_tipos errores
+                                                        func2 = checkTExp exp2 ids_con_tipos (fst func1)
+
+checkTExp (BinOp Sub exp1 exp2) ids_con_tipos errores | snd func1 == TInt && snd func2 == TInt = (fst func2, TInt)
+                                                      | otherwise = (fst func2 ++ [BinOpWrongType Sub (snd func1) (snd func2)], TInt)
+                                                      where
+                                                        func1 = checkTExp exp1 ids_con_tipos errores
+                                                        func2 = checkTExp exp2 ids_con_tipos (fst func1)
+
+checkTExp (BinOp Times exp1 exp2) ids_con_tipos errores | snd func1 == TInt && snd func2 == TInt = (fst func2, TInt)
+                                                        | otherwise = (fst func2 ++ [BinOpWrongType Times (snd func1) (snd func2)], TInt)
+                                                        where
+                                                          func1 = checkTExp exp1 ids_con_tipos errores
+                                                          func2 = checkTExp exp2 ids_con_tipos (fst func1)
+
+checkTExp (BinOp Div exp1 exp2) ids_con_tipos errores | snd func1 == TInt && snd func2 == TInt = (fst func2, TInt)
+                                                      | otherwise = (fst func2 ++ [BinOpWrongType Div (snd func1) (snd func2)], TInt)
+                                                      where
+                                                        func1 = checkTExp exp1 ids_con_tipos errores
+                                                        func2 = checkTExp exp2 ids_con_tipos (fst func1)
+
+checkTExp (BinOp Mod exp1 exp2) ids_con_tipos errores | snd func1 == TInt && snd func2 == TInt = (fst func2, TInt)
+                                                      | otherwise = (fst func2 ++ [BinOpWrongType Mod (snd func1) (snd func2)], TInt)
+                                                      where
+                                                        func1 = checkTExp exp1 ids_con_tipos errores
+                                                        func2 = checkTExp exp2 ids_con_tipos (fst func1)
+
+checkTExp (BinOp And exp1 exp2) ids_con_tipos errores | snd func1 == TBool && snd func2 == TBool = (fst func2, TBool)
+                                                      | otherwise = (fst func2 ++ [BinOpWrongType And (snd func1) (snd func2)], TBool)
+                                                      where
+                                                        func1 = checkTExp exp1 ids_con_tipos errores
+                                                        func2 = checkTExp exp2 ids_con_tipos (fst func1)
+
+checkTExp (BinOp Or exp1 exp2) ids_con_tipos errores | snd func1 == TBool && snd func2 == TBool = (fst func2, TBool)
+                                                     | otherwise = (fst func2 ++ [BinOpWrongType Or (snd func1) (snd func2)], TBool)
+                                                     where
+                                                       func1 = checkTExp exp1 ids_con_tipos errores
+                                                       func2 = checkTExp exp2 ids_con_tipos (fst func1)
+
+checkTExp (BinOp Equ exp1 exp2) ids_con_tipos errores | snd func1 == snd func2 = (fst func2, TBool)
+                                                      | otherwise = (fst func2 ++ [BinOpWrongType Equ (snd func1) (snd func2)], TBool)
+                                                      where
+                                                        func1 = checkTExp exp1 ids_con_tipos errores
+                                                        func2 = checkTExp exp2 ids_con_tipos (fst func1)
+
+checkTExp (BinOp Lt exp1 exp2) ids_con_tipos errores | snd func1 == TInt && snd func2 == TInt = (fst func2, TBool)
+                                                     | otherwise = (fst func2 ++ [BinOpWrongType Lt (snd func1) (snd func2)], TBool)
+                                                     where
+                                                       func1 = checkTExp exp1 ids_con_tipos errores
+                                                       func2 = checkTExp exp2 ids_con_tipos (fst func1)
+                                                        
+checkTExp (UnOp Minus exp) ids_con_tipos errores | snd func == TInt = (fst func, TInt)
+                                                | otherwise = (fst func ++ [UnOpWrongType Minus (snd func)], TInt)
+                                                where
+                                                  func = checkTExp exp ids_con_tipos errores 
+
+checkTExp (UnOp Not exp) ids_con_tipos errores | snd func == TBool = (fst func, TBool)
+                                                | otherwise = (fst func ++ [UnOpWrongType Not (snd func)], TBool)
+                                                where
+                                                  func = checkTExp exp ids_con_tipos errores                                                  

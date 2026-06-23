@@ -1,0 +1,9 @@
+fun foo xs {
+   x := head xs;
+   y := (head (tail (tail xs)))  - 1;
+   
+} Cons (100 / y)  Nil;
+
+fun bar xs {
+   ys := foo (Cons 1 xs); 
+} ys;

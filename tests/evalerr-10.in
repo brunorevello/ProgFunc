@@ -1,0 +1,5 @@
+foo Nil
+foo (Cons 10 Nil)
+foo (Cons 1 (Cons 10 Nil))
+bar Nil
+bar (Cons 5 Nil)
