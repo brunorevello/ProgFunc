@@ -336,12 +336,12 @@ checkTPattern (PVar id) tipo ids_con_tipos errores = (errores, tipo, (id, tipo):
 checkTExp :: Exp -> [(Id, Type)] -> [TypeError] -> ([TypeError], Type)
 checkTExp (LitN _) _ errores = (errores, TInt)
 checkTExp (LitB _) _ errores = (errores, TBool)
-checkTExp (Cons exp1 exp2) ids_con_tipos errores = (errs2 ++ errT1 ++ errT2, TList)
+checkTExp (Cons exp1 exp2) ids_con_tipos errores 
+  | snd func1 == TInt && snd func2 == TList = (fst func2, TList)
+  | otherwise = (fst func2 ++ [ConsExpType (snd func1) (snd func2)], TList) 
   where
-    (errs1, t1) = checkTExp exp1 ids_con_tipos errores
-    (errs2, t2) = checkTExp exp2 ids_con_tipos errs1
-    errT1 = if t1 /= TInt  then [ConsExpType t1 TList] else []
-    errT2 = if t2 /= TList then [ConsExpType TInt t2]  else []
+    func1 = checkTExp exp1 ids_con_tipos errores
+    func2 = checkTExp exp2 ids_con_tipos (fst func1)
 
 checkTExp Nil _ errores = (errores, TList)
 checkTExp (Head exp) ids_con_tipos errores | snd func == TList = (fst func, TInt)
