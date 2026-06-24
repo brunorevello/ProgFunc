@@ -226,17 +226,13 @@ checkExpresion (BinOp _ exp1 exp2) funs vars= checkExpresion exp1 funs vars ++ c
 -- Chequeo de una expresión.
 -- El comportamiento de la función se especifica en la letra de la Tarea.
 checkExp :: Prog -> Exp -> CheckRes
-checkExp p exp = 
-  if not (null nameErrors)
-    then HasNameErrors nameErrors
-    else if not (null typeErrors)
-           then HasTypeErrors typeErrors
-           else Ok
+checkExp p exp
+  | not (null nameErrors) = HasNameErrors nameErrors
+  | not (null typeErrors) = HasTypeErrors typeErrors
+  | otherwise             = Ok
   where
-    funs = [idF | Fun idF _ _ _ <- p]
-
+    funs       = [idF | Fun idF _ _ _ <- p]
     nameErrors = checkExpresion exp funs []
-
     (typeErrors, _) = checkTExp exp [] []
 
 checkTypes :: Prog -> [TypeError] -> [TypeError]
@@ -340,11 +336,12 @@ checkTPattern (PVar id) tipo ids_con_tipos errores = (errores, tipo, (id, tipo):
 checkTExp :: Exp -> [(Id, Type)] -> [TypeError] -> ([TypeError], Type)
 checkTExp (LitN _) _ errores = (errores, TInt)
 checkTExp (LitB _) _ errores = (errores, TBool)
-checkTExp (Cons exp1 exp2) ids_con_tipos errores | snd func1 == TInt && snd func2 == TList = (fst func2, TList)
-                                                 | otherwise = (fst func2 ++ [ConsExpType (snd func1) (snd func2)], TList) 
-                                                 where
-                                                   func1 = checkTExp exp1 ids_con_tipos errores
-                                                   func2 = checkTExp exp2 ids_con_tipos (fst func1)
+checkTExp (Cons exp1 exp2) ids_con_tipos errores = (errs2 ++ errT1 ++ errT2, TList)
+  where
+    (errs1, t1) = checkTExp exp1 ids_con_tipos errores
+    (errs2, t2) = checkTExp exp2 ids_con_tipos errs1
+    errT1 = if t1 /= TInt  then [ConsExpType t1 TList] else []
+    errT2 = if t2 /= TList then [ConsExpType TInt t2]  else []
 
 checkTExp Nil _ errores = (errores, TList)
 checkTExp (Head exp) ids_con_tipos errores | snd func == TList = (fst func, TInt)
