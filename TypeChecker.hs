@@ -226,7 +226,18 @@ checkExpresion (BinOp _ exp1 exp2) funs vars= checkExpresion exp1 funs vars ++ c
 -- Chequeo de una expresión.
 -- El comportamiento de la función se especifica en la letra de la Tarea.
 checkExp :: Prog -> Exp -> CheckRes
-checkExp _ _ = Ok
+checkExp p exp = 
+  if not (null nameErrors)
+    then HasNameErrors nameErrors
+    else if not (null typeErrors)
+           then HasTypeErrors typeErrors
+           else Ok
+  where
+    funs = [idF | Fun idF _ _ _ <- p]
+
+    nameErrors = checkExpresion exp funs []
+
+    (typeErrors, _) = checkTExp exp [] []
 
 checkTypes :: Prog -> [TypeError] -> [TypeError]
 checkTypes [] errores = errores
