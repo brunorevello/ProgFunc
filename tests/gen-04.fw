@@ -1,0 +1,41 @@
+fun reverse xs {
+    ys := Nil;
+    while !(xs == Nil) {
+        ys := Cons (head xs) ys;
+        xs := tail xs;
+    };
+} ys;
+
+fun len xs {
+    n := 0;
+    while !(xs == Nil) {
+        n := n + 1;
+        xs := tail xs;
+    };
+} Cons n Nil;
+
+fun sumList xs {
+    sum := 0;
+    while !(xs == Nil) {
+        sum := sum + head xs;
+        xs := tail xs;
+    };
+} Cons sum Nil;
+
+fun doubleAll xs {
+    res := Nil;
+    while !(xs == Nil) {
+        x := head xs;
+        res := Cons (x * 2) res;
+        xs := tail xs;
+    };
+} reverse res;
+
+fun range xs {
+    n := head xs;
+    res := Nil;
+    while 0 < n {
+        res := Cons n res;
+        n := n - 1;
+    };
+} res;

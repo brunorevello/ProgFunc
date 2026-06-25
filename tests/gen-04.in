@@ -1,0 +1,8 @@
+len Nil
+len (Cons 1 (Cons 2 (Cons 3 Nil)))
+sumList (Cons 1 (Cons 2 (Cons 3 (Cons 4 (Cons 5 Nil)))))
+doubleAll (Cons 1 (Cons 2 (Cons 3 Nil)))
+range (Cons 5 Nil)
+reverse (range (Cons 5 Nil))
+sumList (doubleAll (range (Cons 4 Nil)))
+len (doubleAll (Cons 10 (Cons 20 (Cons 30 Nil))))

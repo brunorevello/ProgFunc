@@ -1,0 +1,42 @@
+fun foo xs {
+    a := head xs;
+    while a < 10 {
+        b := a + 1;
+        case xs of {
+            (Cons x (Cons y ys)) -> {
+                c := x + y;
+                if c < 5 then {
+                    d := foo xs;
+                } else {
+                    d := bar xs;
+                };
+            };
+            Nil -> { d := Nil; };
+        };
+        a := b;
+    };
+} d;
+
+fun bar xs {
+    x := head xs;
+    case xs of {
+        (Cons h (Cons h t)) -> { y := h; };
+        (Cons z Nil) -> { y := z; };
+    };
+    w := y + x;
+} Cons w Nil;
+
+fun baz xs {
+    a := foo xs;
+    b := qux xs;
+    case a of {
+        (Cons x ys) -> {
+            c := x;
+            while c < 10 {
+                d := bar ys;
+                c := c + 1;
+            };
+        };
+        Nil -> { c := 0; };
+    };
+} Cons c Nil;

@@ -1,0 +1,26 @@
+fun foo xs {
+    x := head xs;
+    y := bar (Cons x Nil);
+    while x < 10 {
+        x := x + 1;
+        z := baz xs;
+    };
+    w := y + z;
+} Cons w Nil;
+
+fun bar xs {
+    a := head xs;
+    case xs of {
+        (Cons h (Cons h t)) -> { b := h; };
+        Nil -> { b := 0; };
+    };
+} Cons b Nil;
+
+fun foo ys {
+    c := head ys;
+    if True then {
+        d := c + 1;
+    } else {
+        d := c - 1;
+    };
+} Cons d Nil;

@@ -150,9 +150,6 @@ checkProg p = if null names
   where names = checkOverallDupVar p
         errTypes = checkTypes p []
 
--- Collect ids of duplicated functions
-checkOverallDupFunc :: Prog -> [NameError]
-checkOverallDupFunc p = snd (foldl checkDupFunc ([], []) p)
 
 checkDupFunc :: ([Id], [NameError]) -> Fun -> ([Id], [NameError])
 checkDupFunc (funs, errors) (Fun idF _ _ _)
@@ -165,8 +162,8 @@ checkOverallDupVar :: Prog -> [NameError]
 checkOverallDupVar p = snd (foldl checkDupVar ([],[]) p)
 
 checkDupVar :: ([Id], [NameError]) -> Fun -> ([Id], [NameError])
-checkDupVar (funs, errors) (Fun idF idV stmts exp) = (funsVars , errors ++ errorsFuns ++ errorsVars ++ checkExpresion exp funsVars varsVars)
-  where (funsVars, varsVars, errorsVars) = checkStmts (idF:funs, [idV], []) stmts
+checkDupVar (funs, errors) (Fun idF idV stmts exp) = (idF:funsVars , errors ++ errorsFuns ++ errorsVars ++ checkExpresion exp funsVars varsVars)
+  where (funsVars, varsVars, errorsVars) = checkStmts (funs, [idV], []) stmts
         (_, errorsFuns) = checkDupFunc (funs, []) (Fun idF idV stmts exp)
 
 
