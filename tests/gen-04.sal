@@ -1,0 +1,8 @@
+Cons 0 Nil
+Cons 3 Nil
+Cons 15 Nil
+Cons 2 (Cons 4 (Cons 6 Nil))
+Cons 1 (Cons 2 (Cons 3 (Cons 4 (Cons 5 Nil))))
+Cons 5 (Cons 4 (Cons 3 (Cons 2 (Cons 1 Nil))))
+Cons 20 Nil
+Cons 3 Nil

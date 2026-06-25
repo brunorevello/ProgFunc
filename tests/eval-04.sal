@@ -1,0 +1,2 @@
+Cons 0 Nil
+Cons 3 (Cons 0 Nil)

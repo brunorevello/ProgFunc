@@ -1,0 +1,5 @@
+fun foo xs {
+    x := (head xs);
+    xs := (tail xs);
+} xs;
+

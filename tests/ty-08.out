@@ -1,0 +1,16 @@
+invalid argument type/s in operator Equ: bool, int
+invalid argument type/s in operator Lt: bool, bool
+invalid argument type/s in operator Lt: list, list
+invalid argument type/s in operator And: bool, int
+invalid argument type/s in operator Add: int, bool
+invalid argument type/s in operator Or: bool, int
+invalid argument type/s in operator Times: bool, int
+invalid argument type/s in operator And: int, list
+invalid argument type/s in operator Mod: int, bool
+invalid argument type/s in Cons: list, list
+invalid argument type/s in operator Sub: int, list
+invalid condition type: int
+invalid condition type: int
+invalid assignment in b: expected bool, actual int
+invalid argument type/s in Cons: bool, list
+invalid assignment in b: expected bool, actual list

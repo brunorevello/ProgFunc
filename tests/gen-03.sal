@@ -1,0 +1,29 @@
+fun reverse xs {
+    ys := Nil;
+    while (!(xs == Nil)) {
+        ys := (Cons (head xs) ys);
+        xs := (tail xs);
+    };
+} ys;
+
+fun mapDouble xs {
+    res := Nil;
+    while (!(xs == Nil)) {
+        x := (head xs);
+        res := (Cons (x * 2) res);
+        xs := (tail xs);
+    };
+} (reverse res);
+
+fun filterPos xs {
+    res := Nil;
+    while (!(xs == Nil)) {
+        x := (head xs);
+        if (0 < x) then {
+            res := (Cons x res);
+        } else {
+        };
+        xs := (tail xs);
+    };
+} (reverse res);
+

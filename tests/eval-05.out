@@ -1,0 +1,6 @@
+Cons 5 (Cons 5 (Cons 5 (Cons 5 (Cons 5 (Cons 5 (Cons 5 Nil))))))
+Cons 5 (Cons 5 (Cons 5 Nil))
+Nil
+Nil
+Cons 0 Nil
+True

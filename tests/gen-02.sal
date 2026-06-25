@@ -1,0 +1,9 @@
+invalid assignment in x: expected int, actual bool
+invalid argument type/s in Cons: bool, list
+invalid condition type: int
+invalid condition type: list
+invalid argument type/s in operator Add: int, list
+invalid argument type/s in operator Add: int, list
+invalid pattern: expected list, actual bool
+invalid argument type in foo: int
+invalid argument type in bar: bool

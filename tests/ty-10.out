@@ -1,0 +1,26 @@
+invalid argument type in foo: int
+invalid argument type/s in operator Add: list, int
+invalid argument type/s in Cons: bool, list
+invalid assignment in x: expected int, actual list
+invalid argument type/s in operator Add: int, bool
+invalid argument type/s in operator Or: bool, int
+invalid argument type/s in operator And: int, bool
+invalid assignment in x: expected int, actual bool
+invalid pattern: expected list, actual int
+invalid argument type/s in Cons: list, list
+invalid assignment in x: expected int, actual list
+invalid assignment in xs: expected list, actual bool
+invalid return type in bar: int
+invalid condition type: int
+invalid pattern: expected list, actual bool
+invalid assignment in x: expected int, actual bool
+invalid assignment in x: expected int, actual list
+invalid condition type: list
+invalid argument type in bar: bool
+invalid assignment in x: expected int, actual list
+invalid assignment in xs: expected list, actual int
+invalid argument type in foo: int
+invalid argument type in bar: int
+invalid argument type/s in operator Lt: list, list
+invalid assignment in xs: expected list, actual bool
+invalid return type in baz: bool

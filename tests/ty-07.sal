@@ -1,0 +1,5 @@
+invalid argument type/s in Cons: bool, list
+invalid argument type/s in Cons: list, list
+invalid pattern: expected list, actual bool
+invalid pattern: expected list, actual bool
+invalid pattern: expected list, actual int

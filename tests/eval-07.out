@@ -1,0 +1,4 @@
+Cons 0 (Cons 3 Nil)
+Cons 4 (Cons 8 Nil)
+Cons -1 (Cons 0 Nil)
+Cons 2 (Cons 1 Nil)

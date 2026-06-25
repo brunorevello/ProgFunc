@@ -1,0 +1,4 @@
+fun foo xs {
+    x := (head xs);
+} xs;
+

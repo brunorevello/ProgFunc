@@ -4,5 +4,3 @@ FWhile
 # Archivos de compilación de GHC
 *.hi
 *.o
-*.out
-*.sal
